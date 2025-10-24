@@ -1,7 +1,7 @@
 import streamlit as st
+from datetime import datetime
 from logic.recommender import load_data, get_movies_by_genre, get_main_genre_display, get_subgenre_display
 from ui.display import show_recommendations
-
 
 # Load data
 df = load_data("data/TMDB_all_movies.csv")
@@ -82,6 +82,23 @@ selected_rating_display = st.selectbox(
 selected_rating_min, selected_rating_max = rating_options[selected_rating_display]
 
 
+#Release year selection 
+df['release_year'] = df['release_date'].str[:4]
+df = df.dropna(subset=['release_year'])
+df['release_year'] = df['release_year'].astype(int)
+
+min_year = 1900
+max_year = datetime.now().year
+
+selected_year_range = st.slider(
+    "Select release year range:",
+    min_value=min_year,
+    max_value=max_year,
+    value=(min_year, max_year)
+)
+
+
+
 
 # ------------------------FILTER/SELECTION LOGIC ------------------------
 if st.button("Recommend movies"):
@@ -112,9 +129,15 @@ if st.button("Recommend movies"):
             (recommendations['imdb_rating'] < selected_rating_max)
         ]
 
+    # Release year filter
+    recommendations = recommendations[
+        (recommendations['release_year'] >= selected_year_range[0]) &
+        (recommendations['release_year'] <= selected_year_range[1])
+    ]
+
+
 
 # ----------------------- DISPLAYING MOVIES -----------------------
-
     if recommendations.empty:
         st.warning("No movies found.")
 
