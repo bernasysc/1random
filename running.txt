@@ -1,0 +1,13 @@
+IN TERMINAL
+install virtual environment:
+    python -m venv env
+
+activate virtual environment:
+    .venv\Scripts\activate
+
+install streamlit:
+    pip install streamlit 
+
+run the streamlit: 
+    streamlit run app.py
+    
